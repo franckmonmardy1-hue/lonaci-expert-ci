@@ -328,8 +328,8 @@ document.getElementById('pdfInput').addEventListener('change',async function(){
     r.readAsDataURL(file);
   });
   try{
-    const sys=`Tu es un expert LONACI. Extrais TOUS les résultats de tirages du PDF. Réponds UNIQUEMENT avec ce JSON: {"action":"add_results","tirages":[{"date":"YYYY-MM-DD","nums":[n1,n2,n3,n4,n5]},...]}`;
-    const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:sys,messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}},{type:'text',text:'Extrais tous les tirages LONACI de ce PDF.'}]}]})});
+    const sys=`Tu es un expert LONACI. Extrais TOUS les résultats de tirages du PDF. Réponds UNIQUEMENT avec ce JSON sans aucun texte autour: {"action":"add_results","tirages":[{"date":"YYYY-MM-DD","nums":[n1,n2,n3,n4,n5]},...]}`;
+    const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:sys,messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}},{type:'text',text:'Extrais tous les tirages LONACI de ce PDF.'}]}]})});
     const data=await r.json();
     const text=data.content[0].text;
     const json=JSON.parse(text.replace(/```json|```/g,'').trim());
@@ -349,7 +349,7 @@ async function sendAI(q){
   const sorted=Object.entries(f).sort((a,b)=>b[1]-a[1]);
   const sys=`Tu es un expert LONACI Côte d'Ivoire. Tirage: ${NAMES[currentDraw]}. Tirages analysés: ${getH(currentDraw).length}. Chauds: ${sorted.slice(0,5).map(([n,c])=>n+'(×'+c+')').join(', ')||'aucune donnée'}. Froids: ${sorted.slice(-5).map(([n,c])=>n+'(×'+c+')').join(', ')||'aucune donnée'}.
 
-IMPORTANT: Si l'utilisateur colle des résultats de tirages LONACI, extrais les numéros et réponds UNIQUEMENT avec ce format JSON:
+IMPORTANT: Si l'utilisateur colle des résultats de tirages LONACI, extrais les numéros et réponds UNIQUEMENT avec ce JSON sans texte autour:
 {"action":"add_results","tirages":[{"date":"YYYY-MM-DD","nums":[n1,n2,n3,n4,n5]},...]}
 
 Sinon réponds en français, concis et pratique.`;
