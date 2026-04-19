@@ -54,6 +54,7 @@ body{font-family:system-ui,sans-serif;background:var(--dark);color:var(--text);m
 .grille-balls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0;}
 .grille-ball{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6914);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;}
 .grille-type{text-align:center;font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;}
+.ai-link{display:flex;align-items:center;gap:8px;background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:12px;text-decoration:none;color:var(--text);margin-bottom:12px;}
 .ai-chat{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;min-height:220px;}
 .ai-msg{padding:12px 14px;border-radius:14px;font-size:13px;line-height:1.5;max-width:90%;}
 .ai-msg.assistant{background:var(--dark3);border:1px solid var(--border);align-self:flex-start;}
@@ -173,11 +174,19 @@ body{font-family:system-ui,sans-serif;background:var(--dark);color:var(--text);m
 </div>
 
 <div class="page" id="page-ai">
+  <a href="https://lotobonheur.ci/resultats" target="_blank" class="ai-link">
+    <span style="font-size:20px;">🌐</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;">Résultats officiels LONACI</div>
+      <div style="font-size:11px;color:var(--muted);">Copie les numéros et colle-les ici</div>
+    </div>
+    <span style="margin-left:auto;color:var(--muted);">↗</span>
+  </a>
   <div class="ai-chat" id="aiChat">
-    <div class="ai-msg assistant">👋 Bonjour ! Je suis votre expert LONACI. Posez vos questions sur les tirages, stratégies ou demandez une analyse du tirage sélectionné.</div>
+    <div class="ai-msg assistant">👋 Bonjour ! Colle ici les résultats LONACI et je les enregistre automatiquement. Ou posez vos questions sur les tirages et stratégies.</div>
   </div>
   <div class="ai-input-row">
-    <input type="text" class="ai-input" id="aiInput" placeholder="Votre question..."/>
+    <input type="text" class="ai-input" id="aiInput" placeholder="Colle les résultats ou pose une question..."/>
     <button class="ai-send" id="btnSend">↗</button>
   </div>
 </div><script>
@@ -300,10 +309,26 @@ document.getElementById('btnRegen').addEventListener('click',genGrille);
 async function sendAI(q){
   const f=getFreq(currentDraw);
   const sorted=Object.entries(f).sort((a,b)=>b[1]-a[1]);
-  const sys=`Tu es un expert LONACI Côte d'Ivoire. Tirage: ${NAMES[currentDraw]}. Tirages analysés: ${getH(currentDraw).length}. Chauds: ${sorted.slice(0,5).map(([n,c])=>n+'(×'+c+')').join(', ')||'aucune donnée'}. Froids: ${sorted.slice(-5).map(([n,c])=>n+'(×'+c+')').join(', ')||'aucune donnée'}. Réponds en français, concis et pratique.`;
+  const sys=`Tu es un expert LONACI Côte d'Ivoire. Tirage: ${NAMES[currentDraw]}. Tirages analysés: ${getH(currentDraw).length}. Chauds: ${sorted.slice(0,5).map(([n,c])=>n+'(×'+c+')').join(', ')||'aucune donnée'}. Froids: ${sorted.slice(-5).map(([n,c])=>n+'(×'+c+')').join(', ')||'aucune donnée'}.
+
+IMPORTANT: Si l'utilisateur colle des résultats de tirages LONACI, extrais les numéros et réponds UNIQUEMENT avec ce format JSON (rien d'autre):
+{"action":"add_results","tirages":[{"date":"YYYY-MM-DD","nums":[n1,n2,n3,n4,n5]},...]}
+
+Sinon réponds en français, concis et pratique.`;
   const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})});
   const data=await r.json();
-  return data.content[0].text;
+  const text=data.content[0].text;
+  try{
+    const json=JSON.parse(text);
+    if(json.action==='add_results'){
+      const h=getH(currentDraw);
+      json.tirages.forEach(t=>h.push({date:t.date,nums:t.nums}));
+      saveH(currentDraw,h);
+      renderHistory(); renderStats();
+      return `✅ ${json.tirages.length} tirage(s) ajouté(s) automatiquement !`;
+    }
+  }catch(e){}
+  return text;
 }
 
 function addMsg(text,role){
@@ -346,7 +371,7 @@ document.querySelectorAll('.tab').forEach(t=>{
 document.getElementById('drawSelect').addEventListener('change',function(){
   currentDraw=this.value;
   renderStats(); renderHistory();
-  document.getElementById('aiChat').innerHTML=`<div class="ai-msg assistant">Tirage: <strong>${NAMES[currentDraw]}</strong>. Posez vos questions !</div>`;
+  document.getElementById('aiChat').innerHTML=`<div class="ai-msg assistant">Tirage: <strong>${NAMES[currentDraw]}</strong>. Colle les résultats ou pose une question !</div>`;
 });
 
 document.getElementById('inputDate').value=new Date().toISOString().split('T')[0];
