@@ -330,7 +330,7 @@ document.getElementById('pdfInput').addEventListener('change',async function(){
       r.readAsDataURL(file);
     });
     const sys=`Tu es un expert LONACI. Extrais TOUS les résultats de tirages du PDF. Réponds UNIQUEMENT avec ce JSON sans aucun texte autour: {"action":"add_results","tirages":[{"date":"YYYY-MM-DD","nums":[n1,n2,n3,n4,n5]},...]}`;
-    const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2000,system:sys,messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}},{type:'text',text:'Extrais tous les tirages LONACI de ce PDF.'}]}]})});
+    const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:4000,system:sys,messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}},{type:'text',text:'Extrais tous les tirages LONACI de ce PDF.'}]}]})});
     data=await r.json();
     if(data.error){addMsg('Erreur API: '+data.error.message,'assistant');return;}
     const text=data.content[0].text;
