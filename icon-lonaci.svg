@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0020"/>
+      <stop offset="100%" style="stop-color:#1a0040"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6"/>
+      <stop offset="100%" style="stop-color:#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C9A84C"/>
+      <stop offset="100%" style="stop-color:#8B6914"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.5)"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+
+  <!-- Glow circle -->
+  <circle cx="256" cy="220" r="170" fill="rgba(139,92,246,0.1)" filter="url(#glow)"/>
+
+  <!-- Boule principale -->
+  <circle cx="256" cy="210" r="130" fill="url(#purple)" filter="url(#shadow)"/>
+  <circle cx="256" cy="210" r="130" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+
+  <!-- Numéros sur la boule -->
+  <text x="200" y="195" font-family="Arial Black" font-size="38" font-weight="900" fill="rgba(255,255,255,0.9)" text-anchor="middle">7</text>
+  <text x="256" y="245" font-family="Arial Black" font-size="38" font-weight="900" fill="rgba(255,255,255,0.9)" text-anchor="middle">42</text>
+  <text x="312" y="195" font-family="Arial Black" font-size="38" font-weight="900" fill="rgba(255,255,255,0.9)" text-anchor="middle">18</text>
+
+  <!-- Shine -->
+  <ellipse cx="210" cy="160" rx="45" ry="28" fill="rgba(255,255,255,0.18)" transform="rotate(-20,210,160)"/>
+
+  <!-- Badge gold -->
+  <rect x="136" y="368" width="240" height="68" rx="34" fill="url(#gold)" filter="url(#shadow)"/>
+  <rect x="136" y="368" width="240" height="68" rx="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+
+  <!-- CI Flag colors -->
+  <rect x="136" y="368" width="80" height="68" rx="34" fill="#F97316" opacity="0.8"/>
+  <rect x="296" y="368" width="80" height="68" rx="34" fill="#22C55E" opacity="0.8"/>
+
+  <!-- LONACI text -->
+  <text x="256" y="413" font-family="Arial Black, sans-serif" font-size="26" font-weight="900" fill="#000" text-anchor="middle" letter-spacing="2">LONACI</text>
+
+  <!-- CI flag emoji style -->
+  <text x="256" y="480" font-family="Arial Black" font-size="20" font-weight="900" fill="#8B5CF6" text-anchor="middle" letter-spacing="1">🇨🇮 EXPERT CI</text>
+</svg>
